@@ -15,6 +15,7 @@ switch (command) {
         myTweets();
         break;
 
+// how to integrate if no song input??
         case `spotify-this-song`:
         spotifyThisSong(userInput);
         break;
@@ -35,18 +36,29 @@ switch (command) {
         break;
 }
 
-
-function movieLookup(userInput){
-    //request sample function
-    request('http://www.omdbapi.com/?t=' + userInput + '&apikey=trilogy', function (error, response, body) {
-        console.log('error:', error);
-        console.log('statusCode:', response && response.statusCode);
-        console.log('body:', body);
+function myTweets() {
+    var params = {
+        screen_name: '@LeandraReid'
+    };
+    client.get('statuses/user_timeline', params, function (error, tweets, response) {
+        if (!error) {
+            // console.log(tweets);
+            for (var i = 0; i <= 19; i++) {
+                console.log("Tweet number " + [i] + " : " + tweets[i].text);
+                console.log("This was tweeted on: " + tweets[i].created_at);
+            };
+        };
     });
 };
 
+
+
 //spotify sample function
 function spotifyThisSong(userInput){
+
+    if (!userInput){
+        noSongInput();
+    } else {
     //if else statement for missing input (give song the sign by ace of base)
     spotify
         .search({
@@ -63,9 +75,11 @@ function spotifyThisSong(userInput){
         .catch(function (err) {
             console.log(err);
         });
+    };
 };
 
-function noSongInput() {
+
+function noSongInput(){
     spotify
         .search({
             type: 'track',
@@ -73,7 +87,7 @@ function noSongInput() {
         })
         .then(function (response) {
             var songs = response.tracks.items;
-            console.log("You didn't choose the song " + songs[0].name);
+            console.log("You didn't choose the song but I'm show it to you anyways : " + songs[0].name);
             console.log("This song is by artist " + songs[0].artists[0].name);
             console.log("This song is from the album " + songs[0].album.name);
             console.log("You can play the song here: " + songs[0].external_urls.spotify);
@@ -84,18 +98,23 @@ function noSongInput() {
 };
 
 
-function myTweets(){
-    var params = {
-        screen_name: '@LeandraReid'
-    };
-    client.get('statuses/user_timeline', params, function (error, tweets, response) {
-        if (!error) {
-            // console.log(tweets);
-            for (var i = 0; i <=19; i++){
-                console.log("Tweet number " + [i] + " : " + tweets[i].text);
-                console.log("This was tweeted on: " + tweets[i].created_at);
-            };
-        };
+
+function movieLookup(userInput) {
+    //request sample function
+
+    request('http://www.omdbapi.com/?t=' + userInput + '&apikey=trilogy', function (error, response, body) {
+        var movie = JSON.parse(body);
+        console.log(movie);
+        console.log("You have chosen the movie : " + movie.Title);
+        console.log("It was released on : " + movie.Released);
+        console.log("IMDB gives it a rating of : " + movie.Ratings[0].Value);
+        console.log("Rotten Tomatoes gives it a rating of : " + movie.Ratings[1].Value);
+        console.log("It was produced in : " + movie.Country);
+        console.log("It was made in : " + movie.Language);
+        console.log("A brief plot summary : " + movie.Plot);
+        console.log("It stars : " + movie.Actors);
     });
 };
+
+
 
